@@ -1,0 +1,108 @@
+1) Dada uma variável a do tipo char (um byte), escreva os trechos de código em C para: 
+(a) Somente setar o bit menos significativo de a. 
+
+R:#define BIT1 0 //0000 0001
+    BIT1&P1IN = P1OUT
+
+(b) Somente setar dois bits de a: o menos significativo e o segundo menos significativo.
+
+R:#define BIT2 1 //0000 0011
+    BIT1&P1IN = P1OUT
+    
+(c) Somente zerar o terceiro bit menos significativo de a. 
+
+R:#define BTN (BIT0+BIT1+BIT3+BIT4+BIT0+BIT5+BIT0+BIT6+BIT7) //1111 1011
+    BTN&P1IN = P1OUT
+
+(d) Somente zerar o terceiro e o quarto bits menos significativo de a.
+
+R:#define BTN (BIT0+BIT1+BIT4+BIT0+BIT5+BIT0+BIT6+BIT7) //1111 0011
+    BTN&P1IN = P1OUT
+
+(e) Somente inverter o bit mais significativo de a.
+
+R:#define BTN (BIT7) //1000 0000
+    BTN~&P1IN = P1OUT
+
+(f) Inverter o nibble mais significativo de a, e setar o nibble menos significativo de a.
+
+R:#define BTN (BIT4+BIT5+BIT6+BIT7) //1111 0000
+  # define BTNN (BIT0+BIT1+BIT2+BIT3) //0000 1111
+    P1OUT&BTNN = P1OUT
+    
+2) Considerando a placa Launchpad do MSP430, escreva o código em C para piscar os dois LEDs ininterruptamente.
+
+#include <msp430g2553.h>
+#define LEDS (BIT0+BIT6)
+ 
+int tempo = 0;
+int main( void )
+{
+    WDTCTL = WDTPW + WDTHOLD; // Para Watchgod
+    P1DIR=LEDS; //Define o Port 1 bit 0 e Bit 6 como saida
+    
+    while(1)
+    {
+        for(tempo=0;tempo<100;tempo++); //Tempo para receber o comando de ligar
+        P1OUT=1; //Liga o Led
+        
+        for(tempo=0;tempo<100;tempo++); //Tempo que o LED fica acionado
+        P1OUT=0; //Desliga o Led
+    }
+ 
+    return 0;
+}
+
+3) Considerando a placa Launchpad do MSP430, escreva o código em C para piscar duas vezes os dois LEDs sempre que o usuário pressionar o botão.
+
+#include <msp430g2553.h>
+#define LEDS (BIT0+BIT6)
+  int main (void)
+  {
+  WDTCTL = WDTPW + WDTHOLD; Para Watchgod
+  P1DIR=LEDS;
+  P1OUT = 0x08;
+  
+  while(1)
+   {
+
+  if ( (P1IN & 0x08)==0) //VERIFICA SE O BOTÃO ESTA PRESSIONADO
+  {
+   P1OUT |=  BIT0 // Liga LED 
+  }
+
+  else
+  {
+    P1OUT &=~ BIT0; // Apaga LED 
+  }
+ }
+}
+
+4) Considerando a placa Launchpad do MSP430, faça uma função em C que pisca os dois LEDs uma vez.
+
+#include <msp430g2553.h>
+#define LEDS (BIT0+BIT6)
+ 
+int tempo = 0;
+int main( void )
+{
+    WDTCTL = WDTPW + WDTHOLD; // Para Watchgod
+    P1DIR=LEDS; //Define o Port 1 bit 0 e Bit 6 como saida
+    
+    while(1)
+    {
+        for(tempo=0;tempo<100;tempo++); //Tempo para receber o comando de ligar
+        P1OUT=1; //Liga o Led
+        
+        for(tempo=0;tempo<100;tempo++); //Tempo que o LED fica acionado
+        P1OUT=0; //Desliga o Led
+    }
+ 
+    return 0;
+}
+
+5) Reescreva o código da questão 2 usando a função da questão 4.
+
+O codio da questão 4 foi feito com base na questão 2.
+
+6) Reescreva o código da questão 3 usando a função da questão 4.
