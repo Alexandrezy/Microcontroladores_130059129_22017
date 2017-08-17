@@ -1,0 +1,50 @@
+Q1. Quais as diferenças entre os barramentos de dados e de endereços?
+
+R: Barramento de dados: como o próprio nome já deixa a entender, é por este tipo de barramento que ocorre as trocas de dados no computador, tanto enviados quanto recebidos.
+  Barramento de endereços: indica o local onde os processos devem ser extraídos e para onde devem ser enviados após o processamento.
+
+Q2. Quais são as diferenças entre as memórias RAM e ROM?
+
+R: Mémoria RAM: Volátil, utilizada para random-access, apaga ao desligar.
+   Mémoria Rom: Não-Volátil, programas e arquivos. Mais lenta que a mémoria RAM.
+
+Q3. Considere o código abaixo, de 12 linhas:
+
+    1.   #include <stdio.h>
+    2.   int main(void)
+    3.   {
+    4.      int i;
+    5.      printf("Insira um número inteiro: ");
+    6.      scanf("%d", &i);
+    7.      if(i%2)
+    8.         printf("%d eh impar.\n");
+    9.      else
+   10.         printf("%d eh par.\n");
+   11.      return 0;
+   12.   }
+
+Para este código, responda:
+	(a) A variável 'i' é armazenada na memória RAM ou ROM? Por quê?
+  
+  R:Mémoria RAM pois não se faz necessário a reutilizacao do inteiro i e sim do seu quociente.  
+  
+	(b) O programa compilado a partir deste código é armazenado na memória RAM ou ROM? Por quê?
+	
+  R:O programa é salvo na memoria Rom, para ser reutilizado ate que o desenvolvedor escolha descarta-lo.
+
+Q4. Quais são as diferenças, vantagens e desvantagens das arquiteturas Harvard e Von Neumann?
+
+  R: Neumann, arquitetura mais simples, mais lento pois nao permite acesso simultaneo as memorias e geralmete cisc.
+     Harvard, arquitetura mais complexa, mais rapido pois permite acesso simultaneo as memorias, permite pipelining e geralmente risc.
+
+Q5. Considere a variável inteira 'i', armazenando o valor 0x8051ABCD. Se 'i' é armazenada na memória a partir do endereço 0x0200, como ficam este byte e os seguintes, considerando que a memória é:
+	(a) Little-endian?
+	R:0x0200 (ABCD)
+	  0x0201 (8051)
+	(b) Big-endian?
+	R:0x0200 (8051)
+	  0x0201 (ABCD)
+Q6. Sabendo que o processador do MSP430 tem registradores de 16 bits, como ele soma duas variáveis de 32 bits?
+   R: Com a utilização da flag C, que indica quando há um carry na soma,
+   podendo utilizar outro registrador para armazenar os dados ou como ele tem so 16 bits, e as variaveis tem no total 64 bits, 
+   é nescessario 4 ciclos no processador para execução do calculo.
