@@ -34,4 +34,18 @@ R: a) add.w R4,R4
       add.w R5,R11
    c) add.e R6,R6
       add.w R6,R6
-   d)
+   d) mov.v R4, 2(R4) 
+		add.v (1)R4, 2(R4)
+      
+   e) add.w R4, R4
+		add.w R6, R6
+		add.w R6, R6
+		mov.v R6, 3(R4)
+		sub.w R4, 3(R4)
+      
+   f) Mov.w R6, R13 
+      Add.w R6, R13 
+      Mov.w R4, R11 
+      Sub.w R13, R11 
+      Add.w R11, R11 
+      Mov.w R11, 6(R9)
