@@ -1,120 +1,127 @@
-Para cada questão, escreva funções em C e/ou sub-rotinas na linguagem Assembly do MSP430. Reaproveite funções e sub-rotinas de uma questão em outra, se assim desejar. Leve em consideração que as sub-rotinas são utilizadas em um código maior, portanto utilize adequadamente os registradores R4 a R11. As instruções da linguagem Assembly do MSP430 se encontram ao final deste texto.
+Para cada questão, escreva funções em C e/ou sub-rotinas na linguagem Assembly do MSP430.
+eaproveite funções e sub-rotinas de uma questão em outra, se assim desejar.
+Leve em consideração que as sub-rotinas são utilizadas em um código maior, portanto utilize adequadamente os registradores R4 a R11. 
+As instruções da linguagem Assembly do MSP430 se encontram ao final deste texto.
 
-1. (a) Escreva uma função em C que calcule a raiz quadrada 'x' de uma variável 'S' do tipo float, utilizando o seguinte algoritmo: após 'n+1' iterações, a raiz quadrada de 'S' é dada por
+1. (a) Escreva uma função em C que calcule a raiz quadrada 'x' de uma variável 'S' do tipo float, utilizando o seguinte algoritmo:
+após 'n+1' iterações, a raiz quadrada de 'S' é dada por
 
 	x(n+1) = (x(n) + S/x(n))/2
 
 O protótipo da função é:
 
-	unsigned int Raiz_Quadrada(unsigned int S);{
-float x1 = (S * 1.0) /2;
-float x = (x1+(S/x1))/2;
-while ((x1-x) >= 0.0000001){
-x1 = x;
+	unsigned int Raiz_Quadrada(unsigned int S);{ //Declaração de Função com S o valor que será utilizado no final da mesma
+float x1 = (S * 1.0) /2; 			    // Pega-se um valor a ser tirado a raiz e zera toda sua parte após a virgula, pois se trata de um tipo float,
+float x = (x1+(S/x1))/2;			    // Faz o valor de x(n+1)
+while ((x1-x) >= 0.0000001){ 			    // Enquanto a diferença entre os valores for menor que 0.0000001, a função x(n+1) = (x(n) + S/x(n))/2 de François Viète
+x1 = x;						    // irá se repetir
 x = (x1 + (S/x1))/2;
 }
 return x;
 }
 
-(b) Escreva a sub-rotina equivalente na linguagem Assembly do MSP430. A variável 'S' é fornecida pelo registrador R15, e a raiz quadrada de 'S' (ou seja, a variável 'x') é fornecida pelo registrador R15 também.
-mov.w R15, R4 // R4 = S
-mov.w R4, R5
-rra.w R5 // x1 = S/2
-Div_Unsigned: clr R13;
-	For_Div:
-push.w R4;
- cmp R4, R5;
-	jl END_FOR_DIV;
-	sub R4, R5;
-	inc R13;
-	jmp For_Div;
-	END_FOR_DIV: mov R13, R7;
-pop.w R4;
-	ret;
-add.w R7, R5 // x1 + S/x1
-mov.w R5, R15 // x = x1 + S/x1
-rra.w R15 x = x/2
-WHILE_RAIZQUADRADA:
-mov.w #0.0000001, R6
-sub.w R15, R5
-cmp R6, R5
-jl END_WHILE_RAIZQUADRADA
-call Div_Unsigned
-mov.w R5, R15; // x1 = x
-add.w R7, R5 // x1 + S/x1
-mov.w R5, R15 // x = x1 + S/x1
-rra.w R15 x = x/2
-dec R5;
-END_WHILE¬_RAIZQUADRADA:
-ret;
+(b) Escreva a sub-rotina equivalente na linguagem Assembly do MSP430.
+A variável 'S' é fornecida pelo registrador R15, e a raiz quadrada de 'S' (ou seja, a variável 'x') é fornecida 
+pelo registrador R15 também.
+
+mov.w R15, R4  			;R4 = S	
+mov.w R4, R5   			;R5 = S
+rra.w R5 			;x1 = S/2 com shift right
+Div_Unsigned: clr R13;  	;Zera o valor do registrador R13 e Declara a função Div
+	For_Div:		; Declara função que será o laço
+push.w R4;			; Leva o Registrador R4 para pilha
+ cmp R4, R5;			; Compara os valores de R4 e R5
+	jl END_FOR_DIV	 	; Declara Inivio da função 
+	sub R4, R5		; Subtrai R4 de R5
+	inc R13			;Incrementa ++1 no reg R13
+	jmp For_Div		;Pula para o inicio da função For_Div e so sai quando R4 for igual a R5
+	END_FOR_DIV: mov R13, R7; Termina a sub rotina e move o registrador R13 para R7
+pop.w R4;			;Traz R4 da Pilha
+	ret			; Retorna para antes da Interrupção
+add.w R7, R5 			; x1 + S/x1	
+mov.w R5, R15 			; x = x1 + S/x1
+rra.w R15 			; x = x/2 utilizando shift right
+WHILE_RAIZQUADRADA:		;Inicio da Função
+mov.w #0.0000001, R6		; Move o numero 0.0000001 para o Reg R6
+sub.w R15, R5			;Subtrai R15 de R5 (R5 = R5-R15)
+cmp R6, R5			;Compara R6 com R5
+jl END_WHILE_RAIZQUADRADA	;Se R6 for diferente de R5, ele pula para a Função END_WHILE_RAIZQUADRADA
+call Div_Unsigned		; Interrupção para a Função Div_Unsigned
+mov.w R5, R15 			; x1 = x
+add.w R7, R5 			; x1 + S/x1
+mov.w R5, R15 			; x = x1 + S/x1
+rra.w R15 			; x = x/2 com shift right		
+dec R5;				;Decrementa de R5
+END_WHILE_RAIZQUADRADA:		;Termina a função
+ret				;Retorna para o a interrupção começou
 
 2. (a) Escreva uma função em C que calcule 'x' elevado à 'N'-ésima potência, seguindo o seguinte protótipo: 
 
 	int Potencia(int x, int N);
-
-{intsign = 0 p=1;
-	if (N<0)
-	{ N = -N;
-	sign = 1;}
 	
-	while (N>0)
-	{p = Mult_Signed(X, p);
-	N--;
-	}
-	if (sign==1)
-	{return Div_Signed(1,p);
-	else
-	return p;}
-	}
-	
+ int potencia (int x, int n){  	 //Inicio da Função   
+  int resultado = x;   		//O resultado será dado na variavel x 
+ int i;  			//variavel transiente
+   for ( i = 0; i < n-1; i++){  //Enquanto i for menor que o exponencial -1, o numero x vai se multiplicar
+      resultado = resultado*x;  //Multiplicação da base por ela mesma
+ }    return resultado;		//Valor final
+} 
 
-(b) Escreva a sub-rotina equivalente na linguagem Assembly do MSP430. 'x' e 'n' são fornecidos através dos registradores R15 e R14, respectivamente, e a saída deverá ser fornecida no registrador R15.
+
+(b) Escreva a sub-rotina equivalente na linguagem Assembly do MSP430. 'x' e 'n' são fornecidos através dos registradores R15 e R14,
+respectivamente, e a saída deverá ser fornecida no registrador R15.
 Potencia: 
-	push R4;
-	push R5;
-	clr R4;
-	mov.w #1, R5;
-	comp #0, R14;
-	jge R14;
-	inc R14;
-	mov.w #1, R4;
-	WHILE_POT: cmp #1, R14;
-	jl WHILE_POT_END;
-	push R15;
-	push R14;
-	mov.w R5, R14;
-	call Mult_Signed;
-	mov.w R15, R5;
-	pop R14;
-	pop R15;
-	dec R14;
-	jmp WHILE_POT;
-	WHILE_POT_END: 
-	cmp #1 R4;
-	jne POT_END;
-	mov.w #1, R15;
-	mov.w R5, R14;
-	call Div_Signed;
-	pop R5;
-	pop R4;
-	ret;
-	POT_END: mov.w R5, R15;
-	pop R5;
-	pop R4;
-	ret;
+	push R4;			; Pega R4 para pilha
+	push R5;			; Pega R5 para pilha
+	clr R4;				; Zera o valor de R4
+	mov.w #1, R5;			; Copia o numero 1 para R15
+	comp #0, R14;			; Com para o valor R14 com o numero 0
+	jge R14;			; Se R14 for menor ou igual a 0, entao
+	inc R14				;Incrementa 1 a R14 I++
+	mov.w #1, R4;			; Copia o valor 1 para R4
+	WHILE_POT: cmp #1, R14		;Começa o laço, compara R14 com 1
+	jl WHILE_POT_END		;Se R14 for menor que 1 ele pula para WHILE_POT_END
+	push R15			;Leva R15 para pilha
+	push R14			;Leva R14 para pilha
+	mov.w R5, R14			;Copia R5 para R14
+	call Mult_Signed		;Interrompe o codigo e chama função Mult Signed
+	mov.w R15, R5			;Copia R15 para R5
+	pop R14				;Traz R14 da pilha
+	pop R15				;Traz R15 da pilha
+	dec R14;			;Decrementa R14
+	jmp WHILE_POT			;Independente do que aconteça, a função WHILE_POT será chamada
+	WHILE_POT_END: 			;Função
+	cmp #1 R4			: Compara R4 com o numero 1
+	jne POT_END			;Se R4 for diferente de 1, a função POT_END será chamada
+	mov.w #1, R15			;Copia 1 para R15
+	mov.w R5, R14			;Copia 1 para R14
+	call Div_Signed			;Interrompe o codigo e chama a função Div_Signed
+	pop R5				;Traz R5 da pilha
+	pop R4				;Traz R4 da Pilha
+	ret				;Retorna de onde a interrupção começou
+	POT_END: mov.w R5, R15		;Função, copia o valor de R5 para R15
+	pop R5				;Traz R5 da Pilha
+	pop R4				;Traz R4 da Pilha
+	ret				;Retorna de Onde a interrupção começou
+	
 
+3. Escreva uma sub-rotina na linguagem Assembly do MSP430 que calcula a divisão de 'a' por 'b', onde 'a', 'b' e o valor de saída
+são inteiros de 16 bits. 'a' e 'b' são fornecidos através dos registradores R15 e R14, respectivamente,
+e a saída deverá ser fornecida através do registrador R15.
 
-3. Escreva uma sub-rotina na linguagem Assembly do MSP430 que calcula a divisão de 'a' por 'b', onde 'a', 'b' e o valor de saída são inteiros de 16 bits. 'a' e 'b' são fornecidos através dos registradores R15 e R14, respectivamente, e a saída deverá ser fornecida através do registrador R15.
-Div_Unsigned: clr R13;
-	For_Div: cmp R14, R15;
-	jl END_FOR_DIV;
-	sub R14, R15;
-	inc R13;
-	jmp For_Div;
-	END_FOR_DIV: mov R13, R15;
-	ret;
+Div_Unsigned: clr R13			;Inicio da Função, limpa R13
+	For_Div: cmp R14, R15		;Inicio do laço, Compara R14 com R15
+	jl END_FOR_DIV			; Se R15 for menor que R14, ele pula para a função 
+	sub R14, R15			;Subtrai R15 de R14 (R15=R15-R14)
+	inc R13				; Incrementa R13
+	jmp For_Div			; Pula para a função For_Div
+	END_FOR_DIV: mov R13, R15	;Final de Função, Copia R13 para R15
+	ret				;Volta de onde começou a interrupção
 
-4. Escreva uma sub-rotina na linguagem Assembly do MSP430 que calcula o resto da divisão de 'a' por 'b', onde 'a', 'b' e o valor de saída são inteiros de 16 bits. 'a' e 'b' são fornecidos através dos registradores R15 e R14, respectivamente, e a saída deverá ser fornecida através do registrador R15.
+4. Escreva uma sub-rotina na linguagem Assembly do MSP430 que calcula o resto da divisão de 'a' por 'b', onde 'a', 'b' 
+e o valor de saída são inteiros de 16 bits. 'a' e 'b' são fornecidos através dos registradores R15 e R14, respectivamente, 
+e a saída deverá ser fornecida através do registrador R15.
+
 A – R15; b – 14;
 push.w R15
 RESTO:
